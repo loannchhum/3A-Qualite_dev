@@ -1,25 +1,19 @@
 package org.ormi.priv.tfa.orderflow.product.registry.aggregate.repository.model;
 
+/**
+ * Entity representing a product registration event in the product registry.
+ */
 public class ProductRegisteredEventEntity extends ProductRegistryEventEntity {
   static final String EVENT_TYPE = "ProductRegistered";
 
   /**
-   * Payload for the event.
+   * Payload for the event, implemented as a record.
    */
-  public static class Payload {
-    /**
-     * The id of the product.
-     */
-    public String productId;
-    /**
-     * The name of the product.
-     */
-    public String name;
-    /**
-     * The description of the product.
-     */
-    public String productDescription;
-  }
+  public record Payload(
+      String productId,          // The id of the product
+      String name,               // The name of the product
+      String productDescription  // The description of the product
+  ) {}
 
   /**
    * The payload for the event.
