@@ -335,7 +335,14 @@ public class ProductRegistryCommandResource {
           .topic(topic)
           .subscribe();
     } catch (PulsarClientException e) {
-      throw new RuntimeException("Failed to create consumer for product registry events.", e);
+        throw new ProductRegistryConsumerException(
+                "Failed to create consumer for product registry events with correlation ID: " + correlationId, e);
     }
   }
+
+  public class ProductRegistryConsumerException extends Exception {
+    public ProductRegistryConsumerException(String message, Throwable e) {
+        super(message, e);
+    }
+}
 }

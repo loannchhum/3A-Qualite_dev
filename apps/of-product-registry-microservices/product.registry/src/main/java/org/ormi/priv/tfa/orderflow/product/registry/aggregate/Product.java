@@ -59,6 +59,11 @@ public class Product {
     return productDescription;
   }
 
+  /**
+   * return the details of the product in a string
+   * 
+   * @return the string definition of the object
+  */
   @Override
   public String toString() {
     return "Product{" +
@@ -68,6 +73,10 @@ public class Product {
       '}';
   }
 
+  /**
+   * @param Object The object to compare
+   * @return true if the product is equal of the object
+   */
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
@@ -77,6 +86,9 @@ public class Product {
     return productId.equals(other.productId);
   }
 
+  /**
+   * @return The hashcode of the product
+   */
   @Override
   public int hashCode() {
     return productId.hashCode();

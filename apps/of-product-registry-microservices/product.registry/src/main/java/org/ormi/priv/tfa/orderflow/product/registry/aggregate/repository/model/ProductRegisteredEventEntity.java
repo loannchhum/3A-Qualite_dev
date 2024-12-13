@@ -44,3 +44,4 @@ public class ProductRegisteredEventEntity extends ProductRegistryEventEntity {
         return EVENT_TYPE;
     }
 }
+

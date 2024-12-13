@@ -11,7 +11,6 @@ public class ProductRemovedEventEntity extends ProductRegistryEventEntity {
      * Payload for the event.
      */
     public static record Payload(String productId) {}
-
     /**
      * The payload for the event.
      */
@@ -40,3 +39,4 @@ public class ProductRemovedEventEntity extends ProductRegistryEventEntity {
         return EVENT_TYPE;
     }
 }
+
