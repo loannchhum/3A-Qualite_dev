@@ -81,34 +81,41 @@ public class ProductRegistryEventEmitter {
     eventEmitter.send(removed);
   }
 
+  public class EventSinkException extends Exception {
+    public EventSinkException(String message, Throwable cause) {
+        super(message, cause);
+    }
+  }
+
   /**
    * Produce the given event with the given correlation id.
    * 
    * @param correlationId - the correlation id
    * @param event         - the event
    */
-  public void sink(String correlationId, ProductRegistryEvent event) {
+  public void sink(String correlationId, ProductRegistryEvent event) throws EventSinkException {
     // Get the producer for the correlation id
     getEventSinkByCorrelationId(correlationId)
-        .thenAccept((producer) -> {
-          // Sink the event
-          producer
-              .newMessage()
+      .thenAccept((producer) -> {
+          try {
+            producer.newMessage()
               .value(event)
               .sendAsync()
               .whenComplete((msgId, ex) -> {
                 if (ex != null) {
-                  throw new RuntimeException("Failed to produce event for correlation id: " + correlationId, ex);
+                  throw new EventSinkException("Failed to produce event for correlation id: " + correlationId, ex);
                 }
-                Log.debug(String.format("Sinked event with correlation id{%s} in msg{%s}", correlationId, msgId));
                 try {
                   producer.close();
                 } catch (PulsarClientException e) {
-                  throw new RuntimeException("Failed to close producer", e);
+                  throw new EventSinkException("Failed to close producer for correlation id: " + correlationId, e);
                 }
               });
-        });
-  }
+          } catch (Exception e) {
+            throw new EventSinkException("Unexpected error while sinking event for correlation id: " + correlationId, e);
+          }
+      });
+}
 
   /**
    * Create a producer for the given correlation id.
@@ -127,7 +134,14 @@ public class ProductRegistryEventEmitter {
         .topic(topic)
         .createAsync()
         .exceptionally(ex -> {
-          throw new RuntimeException("Failed to create producer for correlation id: " + correlationId, ex);
+          throw new CompletionException(
+            new EventProducerCreationException("Failed to create producer for correlation id: " + correlationId, ex));
         });
   }
+
+  public class EventProducerCreationException extends Exception {
+    public EventProducerCreationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+}
 }

@@ -171,7 +171,14 @@ public class ProductRegistryQueryResource {
           .subscriptionName(topic)
           .subscribe();
     } catch (PulsarClientException e) {
-      throw new RuntimeException("Failed to create consumer for correlationId: " + correlationId, e);
+        throw new QueryResultConsumerException(
+                "Failed to create consumer for query results with correlation ID: " + correlationId, e);
     }
   }
+
+  public class QueryResultConsumerException extends Exception {
+    public QueryResultConsumerException(String message, Throwable cause) {
+        super(message, cause);
+    }
+  } 
 }
