@@ -1,5 +1,8 @@
 package org.ormi.priv.tfa.orderflow.product.registry.aggregate.repository.model;
 
+/**
+ * Entity representing a product registration event in the product registry.
+ */
 public class ProductRegisteredEventEntity extends ProductRegistryEventEntity {
 
     static final String EVENT_TYPE = "ProductRegistered";
@@ -7,74 +10,11 @@ public class ProductRegisteredEventEntity extends ProductRegistryEventEntity {
     /**
      * Payload for the event.
      */
-    public static class Payload {
-        /**
-         * The id of the product.
-         */
-        private String productId;
-        /**
-         * The name of the product.
-         */
-        private String name;
-        /**
-         * The description of the product.
-         */
-        private String productDescription;
-
-        /**
-         * Get the product ID.
-         * 
-         * @return the productId
-         */
-        public String getProductId() {
-            return productId;
-        }
-
-        /**
-         * Set the product ID.
-         * 
-         * @param productId the productId to set
-         */
-        public void setProductId(String productId) {
-            this.productId = productId;
-        }
-
-        /**
-         * Get the name of the product.
-         * 
-         * @return the name
-         */
-        public String getName() {
-            return name;
-        }
-
-        /**
-         * Set the name of the product.
-         * 
-         * @param name the name to set
-         */
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        /**
-         * Get the product description.
-         * 
-         * @return the productDescription
-         */
-        public String getProductDescription() {
-            return productDescription;
-        }
-
-        /**
-         * Set the product description.
-         * 
-         * @param productDescription the productDescription to set
-         */
-        public void setProductDescription(String productDescription) {
-            this.productDescription = productDescription;
-        }
-    }
+    public static record Payload(
+        String productId,
+        String name,
+        String productDescription
+    ) {}
 
     /**
      * The payload for the event.

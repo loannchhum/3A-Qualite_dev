@@ -1,5 +1,8 @@
 package org.ormi.priv.tfa.orderflow.product.registry.aggregate.repository.model;
 
+/**
+ * Entity representing a product removed event in the product registry.
+ */
 public class ProductRemovedEventEntity extends ProductRegistryEventEntity {
 
     static final String EVENT_TYPE = "ProductRemoved";
@@ -7,30 +10,7 @@ public class ProductRemovedEventEntity extends ProductRegistryEventEntity {
     /**
      * Payload for the event.
      */
-    public static class Payload {
-        /**
-         * The id of the product.
-         */
-        private String productId;
-
-        /**
-         * Get the product id.
-         * 
-         * @return the product id
-         */
-        public String getProductId() {
-            return productId;
-        }
-
-        /**
-         * Set the product id.
-         * 
-         * @param productId the product id to set
-         */
-        public void setProductId(String productId) {
-            this.productId = productId;
-        }
-    }
+    public static record Payload(String productId) {}
 
     /**
      * The payload for the event.
