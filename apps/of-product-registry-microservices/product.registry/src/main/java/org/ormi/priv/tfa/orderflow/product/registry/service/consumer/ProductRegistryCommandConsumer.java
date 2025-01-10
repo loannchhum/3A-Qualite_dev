@@ -9,7 +9,6 @@ import org.eclipse.microprofile.reactive.messaging.Message;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.command.ProductRegistryCommand;
 import org.ormi.priv.tfa.orderflow.product.registry.aggregate.ProductRegistry;
 import org.ormi.priv.tfa.orderflow.product.registry.aggregate.service.ProductRegistryService;
-import org.ormi.priv.tfa.orderflow.product.registry.service.producer.ProductRegistryEventEmitter;
 
 import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.pulsar.PulsarIncomingMessageMetadata;
@@ -22,9 +21,6 @@ public class ProductRegistryCommandConsumer {
 
   @Inject
   private ProductRegistryService productRegistryService;
-
-  @Inject
-  private ProductRegistryEventEmitter eventProducer;
 
   /**
    * The cached product registry.
@@ -70,15 +66,14 @@ public class ProductRegistryCommandConsumer {
     return loadRegistry().handle(cmd)
         .subscribeAsCompletionStage()
         .thenAccept(evt -> {
-          // Produce event on correlated bus
-          eventProducer.sink(correlationId, evt);
-          Log.debug(String.format("Acknowledge command: %s", cmd.getClass().getName()));
-          msg.ack();
+            // Log the redirection of event handling
+            Log.debug(String.format("Event %s will not be emitted on the write side, delegated to read side.", evt.getClass().getName()));
+            msg.ack();
         }).exceptionallyCompose(e -> {
-          // Log error and nack message
-          Log.error(String.format("Failed to handle command: %s", e.getMessage()));
-          msg.nack(e);
-          return CompletableFuture.failedFuture(e);
+            // Log error and nack message
+            Log.error(String.format("Failed to handle command: %s", e.getMessage()));
+            msg.nack(e);
+            return CompletableFuture.failedFuture(e);
         });
   }
 }

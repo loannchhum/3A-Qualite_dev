@@ -1,5 +1,6 @@
 package org.ormi.priv.tfa.orderflow.product.registry.service.producer;
 
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.CompletionStage;
 
 import org.apache.pulsar.client.api.Producer;
@@ -12,6 +13,8 @@ import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRegistryEv
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRemoved;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductUpdated;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.config.ProductRegistryEventChannelName;
+import org.ormi.priv.tfa.orderflow.product.registry.service.producer.ProductRegistryEventEmitter.EventProducerCreationException;
+import org.ormi.priv.tfa.orderflow.product.registry.service.producer.ProductRegistryEventEmitter.EventSinkException;
 
 import io.quarkus.logging.Log;
 import io.smallrye.reactive.messaging.pulsar.PulsarClientService;
@@ -40,18 +43,12 @@ public class ProductRegistryEventEmitter {
 
   /**
    * Project the event.
-   * 
+   *
    * @param event - the event to project
    */
   public void emit(ProductRegistryEvent event) throws IllegalStateException {
-    Log.debug("Projecting event: " + event.toString());
-    if (event instanceof ProductRegistered registered) {
-      emitRegisteredProduct(registered);
-    } else if (event instanceof ProductUpdated updated) {
-      projectUpdatedProduct(updated);
-    } else if (event instanceof ProductRemoved removed) {
-      emitRemovedProduct(removed);
-    }
+      Log.debug("Event emitting disabled for: " + event.toString());
+      // L'envoi des événements est désactivé
   }
 
   /**
@@ -60,7 +57,8 @@ public class ProductRegistryEventEmitter {
    * @param registered - the event to emit
    */
   void emitRegisteredProduct(ProductRegistered registered) throws IllegalStateException {
-    eventEmitter.send(registered);
+    // desactiver l'envoie des events
+    //eventEmitter.send(registered);
   }
 
   /**
@@ -69,7 +67,8 @@ public class ProductRegistryEventEmitter {
    * @param updated - the event to emit
    */
   void projectUpdatedProduct(ProductUpdated updated) throws IllegalStateException {
-    eventEmitter.send(updated);
+    // desactiver l'envoie des events
+    //eventEmitter.send(updated);
   }
 
   /**
@@ -78,7 +77,9 @@ public class ProductRegistryEventEmitter {
    * @param removed - the event to project
    */
   void emitRemovedProduct(ProductRemoved removed) throws IllegalStateException {
-    eventEmitter.send(removed);
+    // desactiver l'envoie des events
+
+    //eventEmitter.send(removed);
   }
 
   public class EventSinkException extends Exception {
@@ -89,33 +90,33 @@ public class ProductRegistryEventEmitter {
 
   /**
    * Produce the given event with the given correlation id.
-   * 
+   *
    * @param correlationId - the correlation id
    * @param event         - the event
    */
   public void sink(String correlationId, ProductRegistryEvent event) throws EventSinkException {
-    // Get the producer for the correlation id
-    getEventSinkByCorrelationId(correlationId)
-      .thenAccept((producer) -> {
-          try {
-            producer.newMessage()
-              .value(event)
-              .sendAsync()
-              .whenComplete((msgId, ex) -> {
-                if (ex != null) {
-                  throw new EventSinkException("Failed to produce event for correlation id: " + correlationId, ex);
-                }
-                try {
-                  producer.close();
-                } catch (PulsarClientException e) {
-                  throw new EventSinkException("Failed to close producer for correlation id: " + correlationId, e);
-                }
-              });
-          } catch (Exception e) {
-            throw new EventSinkException("Unexpected error while sinking event for correlation id: " + correlationId, e);
-          }
-      });
-}
+    Log.info("Event sinking disabled for correlationId: " + correlationId + ", event: " + event.toString());
+    // Désactivation de la logique d'envoi
+    // getEventSinkByCorrelationId(correlationId).thenAccept((producer) -> {
+    //     try {
+    //         producer.newMessage()
+    //           .value(event)
+    //           .sendAsync()
+    //           .whenComplete((msgId, ex) -> {
+    //               if (ex != null) {
+    //                   throw new EventSinkException("Failed to produce event for correlation id: " + correlationId, ex);
+    //               }
+    //               try {
+    //                   producer.close();
+    //               } catch (PulsarClientException e) {
+    //                   throw new EventSinkException("Failed to close producer for correlation id: " + correlationId, e);
+    //               }
+    //           });
+    //     } catch (Exception e) {
+    //         throw new EventSinkException("Unexpected error while sinking event for correlation id: " + correlationId, e);
+    //     }
+    // });
+  }
 
   /**
    * Create a producer for the given correlation id.
