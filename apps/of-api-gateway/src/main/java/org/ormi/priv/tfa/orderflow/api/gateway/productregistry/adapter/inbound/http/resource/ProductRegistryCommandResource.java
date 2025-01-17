@@ -104,7 +104,7 @@ public class ProductRegistryCommandResource {
     // Create a stream of product registry events
     return Multi.createFrom().emitter(em -> {
       // Create consumer for product registry events with the given correlation id
-      final Consumer<ProductRegistryEvent> consumer = getEventsConsumerByCorrelationId(correlationId);
+      final Consumer<ChannelMessage> consumer = getEventsConsumerByCorrelationId(correlationId);
       // Close the consumer on termination
       em.onTermination(() -> {
         try {
@@ -124,7 +124,8 @@ public class ProductRegistryCommandResource {
               Log.debug("No event received within timeout of " + timeout + " seconds.");
               em.complete();
             }
-            final ProductRegistryEvent evt = msg.get().getValue();
+            final ChannelMessage evt = msg.get().getValue();
+
             Log.debug("Received event: " + evt);
             // Map event to DTO
             if (evt instanceof ProductRegistered registered) {
@@ -189,7 +190,7 @@ public class ProductRegistryCommandResource {
     // Create a stream of product registry events
     return Multi.createFrom().emitter(em -> {
       // Create consumer for product registry events with the given correlation id
-      final Consumer<ProductRegistryEvent> consumer = getEventsConsumerByCorrelationId(correlationId);
+      final Consumer<ChannelMessage> consumer = getEventsConsumerByCorrelationId(correlationId);
       // Close the consumer on termination
       em.onTermination(() -> {
         try {
@@ -209,7 +210,7 @@ public class ProductRegistryCommandResource {
               Log.debug("No event received within timeout of " + timeout + " seconds.");
               em.complete();
             }
-            final ProductRegistryEvent evt = msg.get().getValue();
+            final ChannelMessage evt = msg.get().getValue();
             Log.debug("Received event: " + evt);
             // Map event to DTO
             if (evt instanceof ProductUpdated updated) {
@@ -268,7 +269,7 @@ public class ProductRegistryCommandResource {
     // Create a stream of product registry events
     return Multi.createFrom().emitter(em -> {
       // Create consumer for product registry events with the given correlation id
-      final Consumer<ProductRegistryEvent> consumer = getEventsConsumerByCorrelationId(correlationId);
+      final Consumer<ChannelMessage> consumer = getEventsConsumerByCorrelationId(correlationId);
       // Close the consumer on termination
       em.onTermination(() -> {
         try {
@@ -288,7 +289,7 @@ public class ProductRegistryCommandResource {
               Log.debug("No event received within timeout of " + timeout + " seconds.");
               em.complete();
             }
-            final ProductRegistryEvent evt = msg.get().getValue();
+            final ChannelMessage evt = msg.get().getValue();
             Log.debug("Received event: " + evt);
             // Map event to DTO
             if (evt instanceof ProductRemoved removed) {
@@ -323,14 +324,14 @@ public class ProductRegistryCommandResource {
    * @param correlationId - correlation id to use for the consumer
    * @return Consumer for product registry events
    */
-  private Consumer<ProductRegistryEvent> getEventsConsumerByCorrelationId(String correlationId) {
+  private Consumer<ChannelMessage> getEventsConsumerByCorrelationId(String correlationId) {
     try {
       // Define the channel name, topic and schema for the consumer
       final String channelName = ProductRegistryEventChannelName.PRODUCT_REGISTRY_EVENT.toString();
       final String topic = channelName + "-" + correlationId;
       // Create and return the subscription (consumer)
       return pulsarClients.getClient(channelName)
-          .newConsumer(Schema.JSON(ProductRegistryEvent.class))
+          .newConsumer(Schema.JSON(ChannelMessage.class))
           .subscriptionName(topic)
           .topic(topic)
           .subscribe();

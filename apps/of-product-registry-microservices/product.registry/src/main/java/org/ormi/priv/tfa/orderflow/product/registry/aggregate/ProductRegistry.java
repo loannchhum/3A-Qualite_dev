@@ -53,7 +53,7 @@ public class ProductRegistry {
    * @param cmd the command to handle
    */
   @Transactional(value = TxType.REQUIRED)
-  public Uni<? extends ProductRegistryEvent> handle(ProductRegistryCommand cmd) {
+  public Uni<? extends ChannelMessage> handle(ProductRegistryCommand cmd) {
     Log.debug("Handling command: " + cmd.getClass().getName());
     if (cmd instanceof RegisterProduct register) {
       Log.debug("Command: " + register.toString());
@@ -87,7 +87,7 @@ public class ProductRegistry {
    * 
    * @param event the event to apply
    */
-  public void apply(ProductRegistryEvent event) {
+  public void apply(ChannelMessage event) {
     Log.debug("Applying event: " + event.getClass().getName());
     if (event instanceof ProductRegistered registered) {
       final ProductId productId = registered.payload.productId;
