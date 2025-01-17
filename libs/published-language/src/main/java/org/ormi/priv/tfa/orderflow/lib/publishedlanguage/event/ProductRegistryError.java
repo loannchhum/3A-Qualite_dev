@@ -1,4 +1,4 @@
-public class ProductRegistryError {
+public class ProductRegistryError implements ChannelMessage{
     private String errorCode;
     private String errorMessage;
 

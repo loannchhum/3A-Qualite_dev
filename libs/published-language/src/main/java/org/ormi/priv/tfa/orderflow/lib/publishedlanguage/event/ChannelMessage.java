@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;
 
 /**
- * Base class for product registry events.
- */
+ 
+
+    Base class for all channel messages.*/
+
 @JsonTypeInfo(
     use = JsonTypeInfo.Id.NAME,
     include = JsonTypeInfo.As.PROPERTY,
@@ -17,5 +19,5 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
     @JsonSubTypes.Type(value = ProductRemoved.class, name = "ProductRemoved"),
     @JsonSubTypes.Type(value = ProductRegistryError.class, name = "ProductRegistryError")
 })
-public sealed interface ProductRegistryEvent extends ChannelMessage permits ProductRegistered, ProductRemoved, ProductUpdated, ProductRegistryError {
+public sealed interface ChannelMessage permits ProductRegistryEvent, ProductRegistryError {
 }
