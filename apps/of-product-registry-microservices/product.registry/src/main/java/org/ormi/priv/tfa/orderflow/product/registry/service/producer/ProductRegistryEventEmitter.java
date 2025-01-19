@@ -7,6 +7,7 @@ import org.apache.pulsar.client.api.PulsarClientException;
 import org.apache.pulsar.client.api.Schema;
 import org.eclipse.microprofile.reactive.messaging.Channel;
 import org.eclipse.microprofile.reactive.messaging.Emitter;
+import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ChannelMessage;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRegistered;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRegistryEvent;
 import org.ormi.priv.tfa.orderflow.lib.publishedlanguage.event.ProductRemoved;
@@ -36,7 +37,7 @@ public class ProductRegistryEventEmitter {
    * Event emitter to send events to the read model.
    */
   @Channel("product-registry-event")
-  private Emitter<ProductRegistryEvent> eventEmitter;
+  private Emitter<ChannelMessage> eventEmitter;
 
   /**
    * Project the event.
@@ -129,7 +130,7 @@ public class ProductRegistryEventEmitter {
     final String topic = channelName + "-" + correlationId;
     // Create and return the producer
     return pulsarClients.getClient(channelName)
-        .newProducer(Schema.JSON(ProductRegistryEvent.class))
+        .newProducer(Schema.JSON(ChannelMessage.class))
         .producerName(topic)
         .topic(topic)
         .createAsync()
