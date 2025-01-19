@@ -76,9 +76,23 @@ The stock is a list of products that are available for ordering. Each entry incl
 
 ## Documentation
 
-[Go to index](./doc/index.md)
+La documentation du projet est divisée en plusieurs sections pour refléter les différentes parties de l'application.
 
-TODO
+### Gestion des erreurs asynchrones
+Un mécanisme robuste a été ajouté pour gérer les erreurs propagées dans les microservices :
+- Nouvelle classe : `ProductRegistryError`
+- Interface scellée pour unifier les messages de canal.
+- Mappages JSON mis à jour pour inclure les erreurs dans les événements.
+
+### Lecture depuis le flux d'événements
+La lecture des événements a été refactorisée pour séparer clairement les rôles du côté écriture et du côté lecture :
+- Suppression des événements générés sur le côté écriture.
+- API Gateway interroge désormais le côté lecture.
+- Publication des flux d'événements déplacée vers le côté lecture.
+
+[Schema UML](./uml.png)
+
+[Go to index](./doc/index.md)
 
 ## Installation
 
